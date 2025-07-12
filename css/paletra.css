@@ -1,0 +1,23 @@
+.colunas {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+}
+.colunas .coluna-texto {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.colunas .coluna-imagem {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: start;
+}
+.colunas .coluna-imagem img {
+  position: sticky;
+  top: 0;
+  width: 80%;
+  border-radius: 500px;
+}/*# sourceMappingURL=paletra.css.map */

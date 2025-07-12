@@ -1,0 +1,32 @@
+.colunas {
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    
+    .coluna-texto {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .coluna-imagem {
+        position: relative;
+        align-items: start;
+        flex: 1;
+        display: flex;
+        padding-top: 40px;
+        
+        > div {
+            overflow: hidden;
+            position: sticky;
+            top: 0;
+            border-radius: .5rem;
+        }
+
+        img {
+            width: 100%;
+        }
+    }
+}
+
+/* Agrupar todos os <p> como uma "coluna de texto" */

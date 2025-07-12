@@ -1,0 +1,62 @@
+
+#cards {
+    width: 1000px;
+    display: flex;
+    gap: 1rem;
+    margin: 0 auto 16px auto;
+
+    @media (max-width: 1000px){
+        width: 100%;
+    }
+    @media (max-width: 865px){
+        flex-wrap: wrap;
+    }
+
+    .card {
+        width: 250px;
+        overflow: hidden;
+        border: solid 1px #ddd;
+        transition: .5s;
+        border-radius: 4px;
+        box-shadow: 3px 5px 10px rgba(0,0,0,.2);
+
+        @media (max-width: 1000px){
+            width: auto;
+            flex: 1 0 250px;
+        }
+        
+        img {
+            width: 100%;
+        }
+        .card-body {
+            position: relative;
+            padding: 0.5rem;
+            
+            h5 {
+                font-size: 1.3rem;
+                color: var(--laranja);
+            }
+            .origem {
+                color: #aaa;
+                padding: 0.5rem 0;
+            }
+            .modelo {
+                font-weight: 600;
+            }
+        }
+        &:hover {
+            border-color: var(--laranja);
+        }
+        .oferta {
+            background: var(--azul);
+            padding: 4px;
+            color: var(--branco);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            position: absolute;
+            top: -15px;
+            right: 10px;
+        }
+    }
+}  
