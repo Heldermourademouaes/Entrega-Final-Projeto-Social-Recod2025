@@ -1,7 +1,3 @@
-📄 README.md final – Plataforma Helder Moura – Recode Pro 2025
-markdown
-Copiar
-Editar
 # 🌍 Plataforma Helder Moura – Recode Pro 2025
 
 Este projeto foi desenvolvido como entrega final do programa **Recode Pro 2025**, com o objetivo de criar uma **plataforma digital voltada para o apoio à inclusão, à educação acessível e ao protagonismo de pessoas com deficiência** e em situação de vulnerabilidade.
