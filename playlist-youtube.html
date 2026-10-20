@@ -6,7 +6,7 @@
   <title>YouTube Playlist Pro - Standalone Edition</title>
   <style>
     :root {
-      --bg-page: #0b0f17;S
+      --bg-page: #0b0f17;
       --bg-card: #131b29;
       --bg-card-hover: #1b263b;
       --bg-surface: #0a0d14;
@@ -39,10 +39,10 @@
     }
 
     body.meet-screen {
-      padding: 0; margin: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000;
+      padding: 0 !important; margin: 0 !important; width: 100vw !important; height: 100vh !important; overflow: hidden !important; background: #000 !important;
     }
-    .meet-screen #player {
-      width: 100vw; height: 100vh; border: none;
+    body.meet-screen #player {
+      position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; border: none !important; z-index: 9999 !important;
     }
 
     header.app-header {
@@ -677,6 +677,265 @@
       from { transform: translateY(20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+
+    /* Grupo de Botão do Google Meet com Dropdown */
+    .meet-action-group {
+      position: relative;
+      display: inline-flex;
+      align-items: stretch;
+      border-radius: 12px;
+    }
+
+    .meet-action-group button.meet-btn {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+
+    .meet-options-btn {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-left: 1px solid rgba(16, 185, 129, 0.25);
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
+      padding: 0 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      transition: all 0.15s;
+    }
+
+    .meet-options-btn:hover {
+      background: rgba(16, 185, 129, 0.32);
+      color: #fff;
+      border-color: #10b981;
+    }
+
+    .meet-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 320px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(16, 185, 129, 0.25);
+      padding: 8px;
+      z-index: 100;
+      animation: toastIn 0.15s ease-out;
+    }
+
+    .meet-dropdown.open {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meet-dropdown-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      padding: 6px 10px 4px 10px;
+      font-weight: 700;
+    }
+
+    .meet-dropdown .meet-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      color: #e2e8f0;
+      text-align: left;
+      cursor: pointer;
+      width: 100%;
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .meet-dropdown .meet-item:hover {
+      background: rgba(16, 185, 129, 0.18);
+      color: #fff;
+    }
+
+    .meet-dropdown .meet-item .m-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .meet-dropdown .meet-item strong {
+      display: block;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    .meet-dropdown .meet-item span {
+      display: block;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* Modal de Transmissão Meet */
+    .meet-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .meet-modal-backdrop.open {
+      display: flex;
+    }
+
+    .meet-modal-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 20px;
+      max-width: 540px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.2);
+      animation: toastIn 0.2s ease-out;
+    }
+
+    .meet-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #1f2937;
+      padding-bottom: 12px;
+    }
+
+    .modal-close-btn {
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: #9ca3af;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+    }
+
+    .modal-close-btn:hover {
+      background: #374151;
+      color: #fff;
+    }
+
+    .meet-action-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #182235;
+      border: 1px solid #283955;
+      border-radius: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+      color: #e2e8f0;
+      text-decoration: none;
+      text-align: left;
+      transition: all 0.15s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .meet-action-card:hover {
+      background: #1f2d45;
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+    }
+
+    .meet-action-card.highlight {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 78, 59, 0.35) 100%);
+      border: 1.5px solid #10b981;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
+    }
+
+    .meet-action-card.highlight:hover {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(6, 78, 59, 0.5) 100%);
+      border-color: #34d399;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+    }
+
+    .card-icon {
+      font-size: 26px;
+      flex-shrink: 0;
+      width: 36px;
+      text-align: center;
+    }
+
+    .card-text {
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 3px;
+      line-height: 1.35;
+    }
+
+    .badge-rec {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #10b981;
+      color: #041019;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-subtle {
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .btn-subtle:hover {
+      background: #374151;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -687,9 +946,46 @@
       <span class="brand-badge">PRO EDITION</span>
     </div>
     <div class="header-actions">
-      <button class="meet-btn" onclick="openMeetWindow()" title="Abre apenas o vídeo em janela separada para o Google Meet sem eco">
-        📺 Janela Google Meet
-      </button>
+      <!-- Grupo de Botão do Google Meet com Dropdown -->
+      <div class="meet-action-group">
+        <button class="meet-btn" id="btnMeetPrimary" onclick="handleMeetButtonClick()" title="Abre o player em janela ou guia para o Google Meet sem eco">
+          📺 Janela Google Meet
+        </button>
+        <button class="meet-options-btn" onclick="toggleMeetMenu(event)" title="Mais opções do Google Meet">
+          ▾
+        </button>
+        <div class="meet-dropdown" id="meetDropdown">
+          <div class="meet-dropdown-title">Opções de Transmissão (Google Meet):</div>
+          <button type="button" class="meet-item" onclick="openMeetInTab()">
+            <span class="m-icon">🚀</span>
+            <div>
+              <strong>Abrir em Nova Guia (Recomendado)</strong>
+              <span>100% livre de bloqueio e som digital no Meet</span>
+            </div>
+          </button>
+          <button type="button" class="meet-item" onclick="openMeetInPopup()">
+            <span class="m-icon">🪟</span>
+            <div>
+              <strong>Abrir em Janela Pop-up (1280x720)</strong>
+              <span>Janela separada exclusiva para o vídeo</span>
+            </div>
+          </button>
+          <button type="button" class="meet-item" onclick="togglePictureInPicture()">
+            <span class="m-icon">🖼️</span>
+            <div>
+              <strong>Janela Flutuante (Picture-in-Picture)</strong>
+              <span>Vídeo sempre visível sobre outras janelas</span>
+            </div>
+          </button>
+          <button type="button" class="meet-item" onclick="openMeetModal(false)">
+            <span class="m-icon">💡</span>
+            <div>
+              <strong>Como Compartilhar no Meet Sem Eco</strong>
+              <span>Instruções completas para a reunião</span>
+            </div>
+          </button>
+        </div>
+      </div>
       <button onclick="copyAllLinks()">📋 Copiar Links</button>
     </div>
   </header>
@@ -705,12 +1001,13 @@
             <span>● GOOGLE MEET ATIVO</span>
           </div>
           <div id="overlayTitle" style="font-size: 15px; font-weight: 700; max-width: 85%;">Carregando...</div>
-          <p style="font-size: 13px; color: #94a3b8; max-width: 400px;">
-            O áudio e o vídeo estão tocando na janela do Google Meet.
+          <p style="font-size: 13px; color: #94a3b8; max-width: 440px;">
+            O áudio e o vídeo estão tocando na janela/guia do Google Meet para evitar eco. Você pode continuar controlando a lista normalmente por aqui!
           </p>
-          <div style="display: flex; gap: 8px; margin-top: 8px;">
-            <button class="meet-btn" onclick="focusMeetWindow()">Focar Janela Meet</button>
-            <button onclick="deactivateMeetMode()">Trazer Vídeo de Volta</button>
+          <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
+            <button class="meet-btn" onclick="focusMeetWindow()">🔍 Focar Janela Meet</button>
+            <button class="btn-subtle" onclick="openMeetInTab()">🚀 Reabrir em Nova Guia</button>
+            <button class="danger-btn" onclick="deactivateMeetMode()">✕ Trazer Vídeo de Volta (Desativar)</button>
           </div>
         </div>
       </div>
@@ -789,6 +1086,80 @@
         </div>
 
         <ul class="playlist-items" id="playlistUl"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Opções e Resolução de Pop-up do Google Meet -->
+  <div class="meet-modal-backdrop" id="meetModalBackdrop" onclick="if(event.target === this) closeMeetModal()">
+    <div class="meet-modal-card">
+      <div class="meet-modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 26px;">📺</span>
+          <div>
+            <h3 style="font-size: 16px; font-weight: 700; color: #fff;">Transmissão Google Meet</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Áudio digital estéreo direto sem eco do microfone</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeMeetModal()" title="Fechar">✕</button>
+      </div>
+
+      <!-- Alerta visual quando o navegador bloqueia a janela pop-up automática -->
+      <div id="popupBlockedAlert" style="display: none; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px; color: #fbbf24; font-weight: 700; font-size: 13px;">
+          <span>⚠️</span>
+          <span>Seu navegador bloqueou a abertura automática da janela pop-up!</span>
+        </div>
+        <p style="font-size: 12px; color: #fde68a; margin-top: 5px; line-height: 1.45;">
+          Por segurança, o Chrome/Edge bloqueia novas janelas sem aviso. Use o botão <strong>"Abrir em Nova Guia"</strong> abaixo (ele abre 100% das vezes e é a forma recomendada pelo próprio Google Meet).
+        </p>
+      </div>
+
+      <!-- Ações de Abertura -->
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;">
+        <!-- Opção 1: Link direto com target="_blank" (IMUNE A QUALQUER BLOQUEIO) -->
+        <a id="directTabLink" href="#" target="_blank" onclick="onDirectLinkClick()" class="meet-action-card highlight">
+          <div class="card-icon">🚀</div>
+          <div class="card-text">
+            <div class="card-title">
+              <span>Abrir em Nova Guia (Mais fácil e recomendado)</span>
+              <span class="badge-rec">100% FUNCIONA</span>
+            </div>
+            <div class="card-desc">Abre uma guia limpa. No Meet, selecione "Uma guia" para transmitir vídeo a 60fps com áudio estéreo.</div>
+          </div>
+        </a>
+
+        <!-- Opção 2: Pop-up isolado -->
+        <button type="button" onclick="openMeetInPopup()" class="meet-action-card">
+          <div class="card-icon">🪟</div>
+          <div class="card-text">
+            <div class="card-title">Tentar Abrir em Janela Pop-up (1280x720)</div>
+            <div class="card-desc">Abre uma janela independente (ótimo para segundo monitor ou arranjo lado a lado).</div>
+          </div>
+        </button>
+
+        <!-- Opção 3: Picture-in-Picture -->
+        <button type="button" onclick="togglePictureInPicture()" class="meet-action-card">
+          <div class="card-icon">🖼️</div>
+          <div class="card-text">
+            <div class="card-title">Janela Flutuante (Picture-in-Picture)</div>
+            <div class="card-desc">Mini-player flutuante que fica sempre visível por cima de outras janelas.</div>
+          </div>
+        </button>
+      </div>
+
+      <!-- Guia Passo a Passo Oficial do Google Meet -->
+      <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 12px; font-size: 12px; color: #d1fae5;">
+        <div style="font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          <span>🎯</span>
+          <span>Dica para transmitir no Google Meet (meet.google.com):</span>
+        </div>
+        <ol style="margin-left: 18px; line-height: 1.6; color: #a7f3d0;">
+          <li>No Google Meet, clique em <strong>"Compartilhar agora"</strong> (ícone de tela com seta).</li>
+          <li>Escolha a opção <strong>"Uma guia"</strong> (não escolha "Uma janela" nem "A tela inteira").</li>
+          <li>Selecione a guia da transmissão e verifique se a caixinha <strong>"Compartilhar áudio da guia"</strong> está ativada.</li>
+          <li>Pronto! O som toca limpo em alta definição para todos sem eco do microfone!</li>
+        </ol>
       </div>
     </div>
   </div>
@@ -908,24 +1279,73 @@
       }
     }
 
+    function sendSyncCommand(cmd) {
+      try { syncChannel.postMessage(cmd); } catch(e){}
+      try { localStorage.setItem('yt_sync_cmd', JSON.stringify({ ...cmd, _ts: Date.now() })); } catch(e){}
+    }
+
     function onYouTubeIframeAPIReady() {
-      const firstId = playlist[0]?.id || 'jfKfPfyJRdk';
+      const urlParams = new URLSearchParams(window.location.search);
+      const isMeetParam = urlParams.get('view') === 'meet' || window.location.hash.includes('meet');
+      if (isMeetParam) {
+        document.body.classList.add('meet-screen');
+        const playerEl = document.getElementById('player');
+        if (playerEl && playerEl.parentElement !== document.body) {
+          document.body.appendChild(playerEl);
+        }
+        const header = document.querySelector('.app-header');
+        const wrapper = document.querySelector('.wrapper');
+        const modal = document.getElementById('meetModalBackdrop');
+        if (header) header.style.display = 'none';
+        if (wrapper) wrapper.style.display = 'none';
+        if (modal) modal.style.display = 'none';
+      }
+
+      const firstId = urlParams.get('id') || (playlist[0]?.id || 'jfKfPfyJRdk');
+      const startTime = parseFloat(urlParams.get('t') || '0');
+
       player = new YT.Player('player', {
         videoId: firstId,
-        playerVars: { 'autoplay': 0, 'playsinline': 1, 'rel': 0, 'controls': 1 },
+        playerVars: { 
+          'autoplay': isMeetParam ? 1 : 0, 
+          'playsinline': 1, 
+          'rel': 0, 
+          'controls': 1,
+          'start': Math.floor(startTime)
+        },
         events: {
           'onReady': () => {
-            renderPlaylist();
-            updateVolumeUI(currentVolume);
-            setInterval(() => {
-              if (!isMeetActive && player && player.getCurrentTime && !isSeeking) {
-                updateTimeline(player.getCurrentTime() || 0, player.getDuration() || 0);
-              }
-            }, 400);
+            if (isMeetParam) {
+              try { player.playVideo(); } catch(e){}
+              sendSyncCommand({ type: 'MEET_READY' });
+              try { localStorage.setItem('yt_sync_meet_ready', Date.now().toString()); } catch(e){}
+              setInterval(() => {
+                if (player && player.getCurrentTime) {
+                  sendSyncCommand({
+                    type: 'TIME_UPDATE',
+                    currentTime: player.getCurrentTime(),
+                    duration: player.getDuration()
+                  });
+                }
+              }, 500);
+            } else {
+              renderPlaylist();
+              updateVolumeUI(currentVolume);
+              setInterval(() => {
+                if (!isMeetActive && player && player.getCurrentTime && !isSeeking) {
+                  updateTimeline(player.getCurrentTime() || 0, player.getDuration() || 0);
+                }
+              }, 400);
+            }
           },
           'onStateChange': (e) => {
             if (e.data === YT.PlayerState.ENDED) {
-              if (!isMeetActive) playNext(true);
+              if (isMeetParam) {
+                sendSyncCommand({ type: 'VIDEO_ENDED' });
+                try { localStorage.setItem('yt_sync_ended', Date.now().toString()); } catch(e){}
+              } else if (!isMeetActive) {
+                playNext(true);
+              }
             } else if (e.data === YT.PlayerState.PLAYING) {
               isPlaying = true;
               updatePlayBtnUI();
@@ -946,6 +1366,17 @@
     }
 
     function togglePlayPause() {
+      if (isMeetActive) {
+        if (isPlaying) {
+          sendSyncCommand({ type: 'PAUSE' });
+          isPlaying = false;
+        } else {
+          sendSyncCommand({ type: 'PLAY' });
+          isPlaying = true;
+        }
+        updatePlayBtnUI();
+        return;
+      }
       if (!player || !player.getPlayerState) return;
       const state = player.getPlayerState();
       if (state === YT.PlayerState.PLAYING) player.pauseVideo();
@@ -970,6 +1401,12 @@
     }
 
     function relativeSeek(seconds) {
+      if (isMeetActive) {
+        const newTime = Math.max(0, lastCurrentTime + seconds);
+        sendSyncCommand({ type: 'SEEK', time: newTime });
+        updateTimeline(newTime, videoDuration);
+        return;
+      }
       if (!player || !player.getCurrentTime) return;
       player.seekTo(Math.max(0, (player.getCurrentTime() || 0) + seconds), true);
     }
@@ -979,6 +1416,13 @@
       currentIndex = index;
       const item = playlist[currentIndex];
       if (!item) return;
+
+      if (isMeetActive) {
+        sendSyncCommand({ type: 'LOAD_VIDEO', id: item.id });
+        renderPlaylist();
+        return;
+      }
+
       player?.loadVideoById?.(item.id);
       renderPlaylist();
     }
@@ -1000,7 +1444,13 @@
 
     function onSeekChange(percent) {
       if (!videoDuration) return;
-      player?.seekTo?.((percent / 100) * videoDuration, true);
+      const targetTime = (percent / 100) * videoDuration;
+      if (isMeetActive) {
+        sendSyncCommand({ type: 'SEEK', time: targetTime });
+        updateTimeline(targetTime, videoDuration);
+        return;
+      }
+      player?.seekTo?.(targetTime, true);
     }
 
     function toggleRemainingTime() {
@@ -1019,6 +1469,10 @@
       currentVolume = parseInt(vol, 10);
       isMuted = false;
       updateVolumeUI(currentVolume);
+      if (isMeetActive) {
+        sendSyncCommand({ type: 'VOLUME', volume: currentVolume, isMuted: false });
+        return;
+      }
       player?.unMute?.();
       player?.setVolume?.(currentVolume);
     }
@@ -1026,6 +1480,10 @@
     function toggleMute() {
       isMuted = !isMuted;
       updateVolumeUI(currentVolume);
+      if (isMeetActive) {
+        sendSyncCommand({ type: 'VOLUME', volume: currentVolume, isMuted: isMuted });
+        return;
+      }
       if (isMuted) player?.mute?.(); else player?.unMute?.();
     }
 
@@ -1043,7 +1501,11 @@
       const nextSpeed = speeds[(speeds.indexOf(currentSpeed) + 1) % speeds.length];
       currentSpeed = nextSpeed;
       document.getElementById('speedBtn').textContent = `⚡ ${currentSpeed}x`;
-      player?.setPlaybackRate?.(currentSpeed);
+      if (isMeetActive) {
+        sendSyncCommand({ type: 'SPEED', speed: currentSpeed });
+      } else {
+        player?.setPlaybackRate?.(currentSpeed);
+      }
       showToast(`Velocidade: ${currentSpeed}x`);
     }
 
@@ -1157,6 +1619,210 @@
       navigator.clipboard.writeText(links).then(() => {
         showToast(`${playlist.length} links copiados!`);
       });
+    }
+
+    // =========================================================================
+    // SISTEMA DE TRANSMISSÃO GOOGLE MEET (SEM ECO / SOM DUPLICADO)
+    // =========================================================================
+    function getMeetTransmissionUrl() {
+      const base = window.location.href.split('#')[0].split('?')[0];
+      const currId = (playlist[currentIndex] && playlist[currentIndex].id) ? playlist[currentIndex].id : (playlist[0]?.id || 'jfKfPfyJRdk');
+      let currentTime = 0;
+      try {
+        if (player && player.getCurrentTime) {
+          currentTime = Math.floor(player.getCurrentTime());
+        }
+      } catch(e) {}
+      return `${base}?view=meet&id=${encodeURIComponent(currId)}&t=${currentTime}`;
+    }
+
+    syncChannel.onmessage = (e) => {
+      handleIncomingSync(e.data);
+    };
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'yt_sync_cmd' && e.newValue) {
+        try { handleIncomingSync(JSON.parse(e.newValue)); } catch(err){}
+      } else if (e.key === 'yt_sync_meet_ready') {
+        activateMeetMode();
+      } else if (e.key === 'yt_sync_meet_closed') {
+        deactivateMeetMode();
+      }
+    });
+
+    function handleIncomingSync(data) {
+      if (!data) return;
+      const isMeetParam = window.location.search.includes('view=meet') || window.location.hash.includes('meet');
+      if (isMeetParam) {
+        if (data.type === 'LOAD_VIDEO') player?.loadVideoById?.(data.id);
+        else if (data.type === 'PLAY') player?.playVideo?.();
+        else if (data.type === 'PAUSE') player?.pauseVideo?.();
+        else if (data.type === 'SEEK') player?.seekTo?.(data.time, true);
+        else if (data.type === 'VOLUME') {
+          player?.setVolume?.(data.volume);
+          if (data.isMuted) player?.mute?.(); else player?.unMute?.();
+        }
+        else if (data.type === 'SPEED') player?.setPlaybackRate?.(data.speed);
+      } else {
+        if (data.type === 'MEET_READY') activateMeetMode();
+        else if (data.type === 'MEET_CLOSED') deactivateMeetMode();
+        else if (data.type === 'VIDEO_ENDED') playNext(true);
+        else if (data.type === 'TIME_UPDATE' && isMeetActive && !isSeeking) {
+          updateTimeline(data.currentTime, data.duration);
+        }
+      }
+    }
+
+    function toggleMeetMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('meetDropdown');
+      if (menu) menu.classList.toggle('open');
+    }
+
+    function closeMeetMenu() {
+      const menu = document.getElementById('meetDropdown');
+      if (menu) menu.classList.remove('open');
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.meet-action-group')) {
+        closeMeetMenu();
+      }
+    });
+
+    function openMeetModal(isBlocked = false) {
+      closeMeetMenu();
+      const backdrop = document.getElementById('meetModalBackdrop');
+      const directLink = document.getElementById('directTabLink');
+      const blockedAlert = document.getElementById('popupBlockedAlert');
+      if (directLink) {
+        directLink.href = getMeetTransmissionUrl();
+      }
+      if (blockedAlert) {
+        blockedAlert.style.display = isBlocked ? 'block' : 'none';
+      }
+      if (backdrop) {
+        backdrop.classList.add('open');
+      }
+    }
+
+    function closeMeetModal() {
+      const backdrop = document.getElementById('meetModalBackdrop');
+      if (backdrop) backdrop.classList.remove('open');
+    }
+
+    function onDirectLinkClick() {
+      activateMeetMode();
+      setTimeout(closeMeetModal, 400);
+      showToast('🚀 Guia aberta para o Google Meet! Compartilhe esta guia com áudio no Meet.');
+    }
+
+    function openMeetInTab() {
+      closeMeetMenu();
+      closeMeetModal();
+      const meetUrl = getMeetTransmissionUrl();
+      const tabWin = window.open(meetUrl, '_blank');
+      if (tabWin) {
+        meetWindowRef = tabWin;
+        activateMeetMode();
+        showToast('🚀 Guia aberta para o Google Meet! Selecione "Uma guia" na reunião.');
+      } else {
+        openMeetModal(true);
+      }
+    }
+
+    function openMeetInPopup() {
+      closeMeetMenu();
+      handleMeetButtonClick();
+    }
+
+    function handleMeetButtonClick() {
+      closeMeetMenu();
+      const meetUrl = getMeetTransmissionUrl();
+      let win = null;
+      try {
+        win = window.open(meetUrl, 'yt_meet_window', 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no,resizable=yes');
+      } catch (err) {
+        win = null;
+      }
+
+      const isBlocked = !win || win.closed || typeof win.closed === 'undefined';
+      if (isBlocked) {
+        openMeetModal(true);
+        showToast('⚠️ O navegador bloqueou o pop-up automático. Escolha uma opção na janela!');
+        return;
+      }
+
+      meetWindowRef = win;
+      activateMeetMode();
+      closeMeetModal();
+      showToast('📺 Janela do Google Meet aberta! Transmita no Meet sem eco.');
+      setTimeout(() => {
+        if (playlist[currentIndex]) {
+          sendSyncCommand({ type: 'LOAD_VIDEO', id: playlist[currentIndex].id });
+        }
+      }, 700);
+    }
+
+    function openMeetWindow() {
+      handleMeetButtonClick();
+    }
+
+    function focusMeetWindow() {
+      if (meetWindowRef && !meetWindowRef.closed) {
+        try { meetWindowRef.focus(); } catch(e){}
+      } else {
+        handleMeetButtonClick();
+      }
+    }
+
+    function togglePictureInPicture() {
+      closeMeetMenu();
+      closeMeetModal();
+      const meetUrl = getMeetTransmissionUrl();
+      const left = window.screen.width ? (window.screen.width - 500) : 50;
+      const top = window.screen.height ? (window.screen.height - 350) : 50;
+      let pipWin = null;
+      try {
+        pipWin = window.open(meetUrl, 'yt_pip_window', `width=480,height=270,left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,resizable=yes`);
+      } catch(e){}
+      if (pipWin && !pipWin.closed && typeof pipWin.closed !== 'undefined') {
+        meetWindowRef = pipWin;
+        activateMeetMode();
+        showToast('🖼️ Janela flutuante Picture-in-Picture aberta!');
+      } else {
+        openMeetModal(true);
+      }
+    }
+
+    function activateMeetMode() {
+      isMeetActive = true;
+      document.getElementById('meetScreenActiveCard')?.classList.add('active');
+      const titleEl = document.getElementById('overlayTitle');
+      if (titleEl && playlist[currentIndex]) titleEl.textContent = playlist[currentIndex].title;
+      try {
+        player?.mute?.();
+        player?.pauseVideo?.();
+      } catch (err) {}
+    }
+
+    function deactivateMeetMode() {
+      isMeetActive = false;
+      document.getElementById('meetScreenActiveCard')?.classList.remove('active');
+      try {
+        sendSyncCommand({ type: 'PAUSE' });
+        if (meetWindowRef && !meetWindowRef.closed) {
+          meetWindowRef.close();
+        }
+      } catch (e) {}
+      try {
+        player?.unMute?.();
+        player?.setVolume?.(currentVolume);
+        if (player && playlist[currentIndex]) {
+          player.playVideo();
+        }
+      } catch (err) {}
+      showToast('🔊 Vídeo retornado para a tela principal!');
     }
 
     document.addEventListener('keydown', (e) => {
