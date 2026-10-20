@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Playlist Pro - Standalone Edition</title>
+  <style>
+    :root {
+      --bg-page: #0b0f17;S
+      --bg-card: #131b29;
+      --bg-card-hover: #1b263b;
+      --bg-surface: #0a0d14;
+      --border: #222e42;
+      --border-light: #2d3d57;
+      --primary: #00f2ff;
+      --primary-hover: #38f5ff;
+      --primary-dim: rgba(0, 242, 255, 0.12);
+      --primary-glow: rgba(0, 242, 255, 0.35);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(circle at 50% 10%, #151f33 0%, #080c14 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    body.meet-screen {
+      padding: 0; margin: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000;
+    }
+    .meet-screen #player {
+      width: 100vw; height: 100vh; border: none;
+    }
+
+    header.app-header {
+      width: 100%;
+      max-width: 1280px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: rgba(19, 27, 41, 0.8);
+      backdrop-filter: blur(12px);
+      padding: 12px 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+    }
+
+    .brand-badge {
+      background: var(--primary-dim);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #1b263b;
+      color: #f1f5f9;
+      border: 1px solid var(--border-light);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    button:hover {
+      background: #25334d;
+      border-color: #3b4d6b;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #00d2df 0%, #0099b8 100%);
+      color: #041019;
+      font-weight: 700;
+      border: none;
+      box-shadow: 0 4px 14px rgba(0, 242, 255, 0.3);
+    }
+
+    button.primary:hover {
+      background: linear-gradient(135deg, #25e5f0 0%, #00b0d4 100%);
+      box-shadow: 0 6px 20px rgba(0, 242, 255, 0.45);
+      color: #000;
+    }
+
+    button.meet-btn {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    button.meet-btn:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #6ee7b7;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+    }
+
+    button.danger-btn {
+      background: rgba(239, 68, 68, 0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    button.danger-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: var(--danger);
+      color: #fff;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 1280px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (min-width: 1024px) {
+      .wrapper {
+        grid-template-columns: minmax(0, 1.5fr) minmax(380px, 1fr);
+      }
+    }
+
+    .player-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .video-viewport {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8);
+    }
+
+    .video-viewport iframe, 
+    .video-viewport #player {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%; border: none;
+    }
+
+    .meet-active-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 14, 23, 0.96);
+      z-index: 10;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .meet-active-overlay.active { display: flex; }
+
+    .meet-active-badge {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid #10b981;
+      color: #34d399;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .controls-deck {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .now-playing-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .now-playing-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    .live-sound-icon {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+      min-width: 14px;
+    }
+
+    .live-sound-icon span {
+      width: 3px;
+      background: var(--primary);
+      border-radius: 1px;
+      animation: wave 1s ease-in-out infinite alternate;
+    }
+    .live-sound-icon span:nth-child(1) { height: 60%; animation-delay: 0.1s; }
+    .live-sound-icon span:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+    .live-sound-icon span:nth-child(3) { height: 40%; animation-delay: 0.2s; }
+
+    @keyframes wave {
+      0% { height: 20%; }
+      100% { height: 100%; }
+    }
+
+    .now-playing-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .timeline-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .time-label {
+      font-size: 12px;
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--text-muted);
+      width: 48px;
+      user-select: none;
+    }
+
+    .time-label.right {
+      text-align: right;
+      cursor: pointer;
+    }
+    .time-label.right:hover {
+      color: var(--primary);
+    }
+
+    .seek-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: #090e17;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+
+    .seek-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+      transition: transform 0.1s;
+    }
+
+    .seek-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.25);
+    }
+
+    .playback-main-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .transport-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #182235;
+      border: 1px solid var(--border-light);
+      color: #cbd5e1;
+      font-size: 16px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .transport-btn:hover {
+      background: #223049;
+      color: #fff;
+      border-color: #3e5275;
+    }
+
+    .play-master-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00f2ff 0%, #0088cc 100%);
+      color: #041019;
+      font-size: 20px;
+      font-weight: 800;
+      border: none;
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .play-master-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 28px rgba(0, 242, 255, 0.6);
+      color: #000;
+    }
+
+    .bottom-utilities-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .volume-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100px;
+      height: 5px;
+      background: #090e17;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 6px var(--primary);
+    }
+
+    .utility-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill-btn {
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: #182235;
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+    }
+
+    .pill-btn.active {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: var(--primary-dim);
+    }
+
+    .playlist-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .add-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .paste-highlight-badge {
+      font-size: 10px;
+      background: rgba(0, 242, 255, 0.12);
+      color: var(--primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      border: 1px solid rgba(0, 242, 255, 0.3);
+    }
+
+    .instant-paste-wrapper {
+      position: relative;
+      display: flex;
+      gap: 8px;
+    }
+
+    .instant-input {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-light);
+      color: #fff;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .instant-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-dim);
+    }
+
+    .playlist-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .playlist-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .playlist-count {
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .playlist-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .playlist-items::-webkit-scrollbar {
+      width: 6px;
+    }
+    .playlist-items::-webkit-scrollbar-thumb {
+      background: #25334d;
+      border-radius: 4px;
+    }
+
+    .playlist-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #101622;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 10px;
+      transition: all 0.15s ease;
+    }
+
+    .playlist-item:hover {
+      background: #172030;
+      border-color: #2e3e59;
+    }
+
+    .playlist-item.active {
+      background: rgba(0, 242, 255, 0.08);
+      border-color: var(--primary);
+      box-shadow: 0 0 16px rgba(0, 242, 255, 0.15);
+    }
+
+    .item-index {
+      font-size: 11px;
+      font-family: monospace;
+      font-weight: 800;
+      color: var(--text-dim);
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .playlist-item.active .item-index {
+      color: var(--primary);
+    }
+
+    .item-thumb {
+      width: 60px;
+      height: 36px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #000;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .item-details {
+      flex: 1;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .playlist-item.active .item-title {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .item-btn {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      font-size: 12px;
+      border-radius: 6px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+    }
+
+    .item-btn:hover {
+      background: #25334d;
+      color: #fff;
+      border-color: var(--border-light);
+    }
+
+    .item-btn.delete:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #141b29;
+      border: 1px solid var(--primary);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 14px var(--primary-dim);
+      margin-top: 8px;
+      animation: toastIn 0.25s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="brand-title">
+      <span>YouTube Playlist</span>
+      <span class="brand-badge">PRO EDITION</span>
+    </div>
+    <div class="header-actions">
+      <button class="meet-btn" onclick="openMeetWindow()" title="Abre apenas o vídeo em janela separada para o Google Meet sem eco">
+        📺 Janela Google Meet
+      </button>
+      <button onclick="copyAllLinks()">📋 Copiar Links</button>
+    </div>
+  </header>
+
+  <div class="wrapper">
+    <!-- COLUNA DA ESQUERDA: VÍDEO E CONTROLES -->
+    <div class="player-col">
+      <div class="video-viewport">
+        <div id="player"></div>
+
+        <div id="meetScreenActiveCard" class="meet-active-overlay">
+          <div class="meet-active-badge">
+            <span>● GOOGLE MEET ATIVO</span>
+          </div>
+          <div id="overlayTitle" style="font-size: 15px; font-weight: 700; max-width: 85%;">Carregando...</div>
+          <p style="font-size: 13px; color: #94a3b8; max-width: 400px;">
+            O áudio e o vídeo estão tocando na janela do Google Meet.
+          </p>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button class="meet-btn" onclick="focusMeetWindow()">Focar Janela Meet</button>
+            <button onclick="deactivateMeetMode()">Trazer Vídeo de Volta</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROLES MODERNOS (SEM FADERS E SEM EQUALIZADOR DA FOTO) -->
+      <div class="controls-deck">
+        <div class="now-playing-bar">
+          <div class="now-playing-info">
+            <div class="live-sound-icon" id="soundBars">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="now-playing-title" id="nowPlayingText">Carregando vídeo...</span>
+          </div>
+          <span id="currentVideoPosition" style="font-size: 11px; font-family: monospace; color: var(--text-dim);">1 / 3</span>
+        </div>
+
+        <div class="timeline-container">
+          <span class="time-label" id="currentTimeDisplay">0:00</span>
+          <input type="range" class="seek-slider" id="seekBar" min="0" max="100" value="0" step="0.5" oninput="onSeekChange(this.value)">
+          <span class="time-label right" id="durationDisplay" onclick="toggleRemainingTime()" title="Alternar tempo">0:00</span>
+        </div>
+
+        <div class="playback-main-row">
+          <button class="transport-btn" onclick="playPrev()" title="Vídeo Anterior (P)">⏮</button>
+          <button class="transport-btn" onclick="relativeSeek(-10)" title="Voltar 10s (Seta Esquerda)">↺ 10</button>
+          <button class="play-master-btn" id="masterPlayBtn" onclick="togglePlayPause()" title="Tocar / Pausar (Espaço)">▶</button>
+          <button class="transport-btn" onclick="relativeSeek(10)" title="Avançar 10s (Seta Direita)">10 ↻</button>
+          <button class="transport-btn" onclick="playNext()" title="Próximo Vídeo (N)">⏭</button>
+        </div>
+
+        <div class="bottom-utilities-row">
+          <div class="volume-group">
+            <button type="button" class="pill-btn" onclick="toggleMute()" id="muteBtn" title="Mutar / Desmutar (M)">🔊</button>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="85" oninput="setVolume(this.value)">
+            <span id="volumePercentText" style="font-size: 11px; font-family: monospace; color: var(--text-muted); min-width: 32px;">85%</span>
+          </div>
+
+          <div class="utility-badge-group">
+            <button class="pill-btn" id="loopBtn" onclick="toggleLoop()" title="Repetição">🔁 Loop: Desligado</button>
+            <button class="pill-btn" id="shuffleBtn" onclick="shufflePlaylist()" title="Aleatório">🔀 Normal</button>
+            <button class="pill-btn" id="speedBtn" onclick="cyclePlaybackRate()" title="Velocidade">⚡ 1x</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUNA DA DIREITA: ADIÇÃO DIRETA AO COLAR & LISTA -->
+    <div class="playlist-col">
+      <div class="add-panel">
+        <div class="panel-header">
+          <span class="panel-title">
+            <span>⚡ Adicionar Vídeo</span>
+            <span class="paste-highlight-badge">Vai direto ao colar!</span>
+          </span>
+          <span style="font-size: 11px; color: var(--text-dim);">Cole ou digite e dê Enter</span>
+        </div>
+
+        <div class="instant-paste-wrapper">
+          <input 
+            type="text" 
+            id="instantLinkInput" 
+            class="instant-input" 
+            placeholder="Cole o link do YouTube aqui (youtu.be, shorts ou normal)..." 
+            autocomplete="off"
+            onpaste="handleInstantPaste(event)"
+            onkeydown="if(event.key === 'Enter'){ handleManualAdd(); event.preventDefault(); }"
+          >
+          <button class="primary" onclick="handleManualAdd()" id="instantAddBtn">+ Adicionar</button>
+        </div>
+      </div>
+
+      <div class="playlist-panel">
+        <div class="playlist-status-bar">
+          <span class="playlist-count" id="playlistCounter">0 vídeos</span>
+          <button onclick="clearPlaylist()" class="danger-btn" style="padding: 3px 8px; font-size: 11px;" title="Limpar toda a lista">Limpar Lista</button>
+        </div>
+
+        <ul class="playlist-items" id="playlistUl"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    const STORAGE_KEY = 'yt_playlist_pro_local_v3';
+    let playlist = [
+      { id: 'jfKfPfyJRdk', title: 'lofi hip hop radio 📚 - beats to relax/study to' },
+      { id: '5qap5aO4i9A', title: 'Lofi Hip Hop Radio 🐾 - Beats to Sleep/Chill to' },
+      { id: 'DWcJFNfaw90', title: 'Chill Lofi Beats to code/relax' }
+    ];
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) playlist = parsed;
+      }
+    } catch (e) {}
+
+    let currentIndex = 0;
+    let loopMode = 'off';
+    let isShuffled = false;
+    let isMeetActive = false;
+    let isPlaying = false;
+    let currentVolume = 85;
+    let isMuted = false;
+    let currentSpeed = 1;
+    let videoDuration = 0;
+    let lastCurrentTime = 0;
+    let showRemaining = false;
+    let isSeeking = false;
+    let player;
+    let meetWindowRef = null;
+    const syncChannel = new BroadcastChannel('yt_php_sync');
+
+    function savePlaylist() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(playlist));
+      } catch (e) {}
+      renderPlaylist();
+    }
+
+    function showToast(text) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>✓</span> <span>${text}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'all 0.3s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function extractYoutubeId(url) {
+      url = (url || '').trim();
+      if (!url) return null;
+      if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+      const m1 = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+      if (m1) return m1[1];
+      const m2 = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtube\.com\/(?:shorts|live)\/)([a-zA-Z0-9_-]{11})/);
+      if (m2) return m2[1];
+      return null;
+    }
+
+    // AO COLAR, VAI DIRETO PARA A LISTA
+    function handleInstantPaste(event) {
+      const clipboardData = event.clipboardData || window.clipboardData;
+      const pastedText = clipboardData ? clipboardData.getData('text') : '';
+      if (pastedText && pastedText.trim()) {
+        event.preventDefault();
+        const inputEl = document.getElementById('instantLinkInput');
+        inputEl.value = '';
+        addLinkDirect(pastedText.trim());
+      }
+    }
+
+    function handleManualAdd() {
+      const inputEl = document.getElementById('instantLinkInput');
+      const text = inputEl.value.trim();
+      if (!text) return;
+      inputEl.value = '';
+      addLinkDirect(text);
+    }
+
+    async function addLinkDirect(rawText) {
+      const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      let added = 0;
+
+      for (const line of lines) {
+        const id = extractYoutubeId(line);
+        if (id && !playlist.some(p => p.id === id)) {
+          let title = `Vídeo (${id})`;
+          try {
+            const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${id}`);
+            const data = await res.json();
+            if (data && data.title) title = data.title;
+          } catch (e) {}
+
+          playlist.push({ id, title });
+          added++;
+        }
+      }
+
+      if (added > 0) {
+        savePlaylist();
+        showToast(added === 1 ? 'Vídeo adicionado direto na lista!' : `${added} vídeos adicionados à lista!`);
+        if (playlist.length === added) playVideoIndex(0);
+      } else {
+        showToast('Link do YouTube não reconhecido ou já existente.');
+      }
+    }
+
+    function onYouTubeIframeAPIReady() {
+      const firstId = playlist[0]?.id || 'jfKfPfyJRdk';
+      player = new YT.Player('player', {
+        videoId: firstId,
+        playerVars: { 'autoplay': 0, 'playsinline': 1, 'rel': 0, 'controls': 1 },
+        events: {
+          'onReady': () => {
+            renderPlaylist();
+            updateVolumeUI(currentVolume);
+            setInterval(() => {
+              if (!isMeetActive && player && player.getCurrentTime && !isSeeking) {
+                updateTimeline(player.getCurrentTime() || 0, player.getDuration() || 0);
+              }
+            }, 400);
+          },
+          'onStateChange': (e) => {
+            if (e.data === YT.PlayerState.ENDED) {
+              if (!isMeetActive) playNext(true);
+            } else if (e.data === YT.PlayerState.PLAYING) {
+              isPlaying = true;
+              updatePlayBtnUI();
+            } else if (e.data === YT.PlayerState.PAUSED) {
+              isPlaying = false;
+              updatePlayBtnUI();
+            }
+          }
+        }
+      });
+    }
+
+    function updatePlayBtnUI() {
+      const btn = document.getElementById('masterPlayBtn');
+      const soundBars = document.getElementById('soundBars');
+      if (btn) btn.innerHTML = isPlaying ? '⏸' : '▶';
+      if (soundBars) soundBars.style.opacity = isPlaying ? '1' : '0.3';
+    }
+
+    function togglePlayPause() {
+      if (!player || !player.getPlayerState) return;
+      const state = player.getPlayerState();
+      if (state === YT.PlayerState.PLAYING) player.pauseVideo();
+      else player.playVideo();
+    }
+
+    function playNext(auto = false) {
+      if (playlist.length === 0) return;
+      if (loopMode === 'single' && auto) { playVideoIndex(currentIndex); return; }
+      if (isShuffled) {
+        playVideoIndex(Math.floor(Math.random() * playlist.length));
+        return;
+      }
+      if (currentIndex + 1 < playlist.length) playVideoIndex(currentIndex + 1);
+      else if (loopMode === 'all') playVideoIndex(0);
+    }
+
+    function playPrev() {
+      if (playlist.length === 0) return;
+      if (currentIndex > 0) playVideoIndex(currentIndex - 1);
+      else playVideoIndex(playlist.length - 1);
+    }
+
+    function relativeSeek(seconds) {
+      if (!player || !player.getCurrentTime) return;
+      player.seekTo(Math.max(0, (player.getCurrentTime() || 0) + seconds), true);
+    }
+
+    function playVideoIndex(index) {
+      if (index < 0 || index >= playlist.length) return;
+      currentIndex = index;
+      const item = playlist[currentIndex];
+      if (!item) return;
+      player?.loadVideoById?.(item.id);
+      renderPlaylist();
+    }
+
+    function updateTimeline(current, dur) {
+      lastCurrentTime = current;
+      videoDuration = dur;
+      document.getElementById('currentTimeDisplay').textContent = formatTime(current);
+      const durationEl = document.getElementById('durationDisplay');
+      if (showRemaining && dur > 0) {
+        durationEl.textContent = '-' + formatTime(Math.max(0, dur - current));
+      } else {
+        durationEl.textContent = formatTime(dur);
+      }
+      const percent = dur > 0 ? (current / dur) * 100 : 0;
+      const seekBar = document.getElementById('seekBar');
+      if (seekBar) seekBar.value = percent;
+    }
+
+    function onSeekChange(percent) {
+      if (!videoDuration) return;
+      player?.seekTo?.((percent / 100) * videoDuration, true);
+    }
+
+    function toggleRemainingTime() {
+      showRemaining = !showRemaining;
+      updateTimeline(lastCurrentTime, videoDuration);
+    }
+
+    function formatTime(sec) {
+      if (isNaN(sec) || sec < 0) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function setVolume(vol) {
+      currentVolume = parseInt(vol, 10);
+      isMuted = false;
+      updateVolumeUI(currentVolume);
+      player?.unMute?.();
+      player?.setVolume?.(currentVolume);
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      updateVolumeUI(currentVolume);
+      if (isMuted) player?.mute?.(); else player?.unMute?.();
+    }
+
+    function updateVolumeUI(vol) {
+      const slider = document.getElementById('volumeSlider');
+      const text = document.getElementById('volumePercentText');
+      const muteBtn = document.getElementById('muteBtn');
+      if (slider) slider.value = isMuted ? 0 : vol;
+      if (text) text.textContent = isMuted ? 'Mute' : `${vol}%`;
+      if (muteBtn) muteBtn.textContent = isMuted || vol === 0 ? '🔇' : (vol < 50 ? '🔉' : '🔊');
+    }
+
+    function cyclePlaybackRate() {
+      const speeds = [0.75, 1, 1.25, 1.5, 2];
+      const nextSpeed = speeds[(speeds.indexOf(currentSpeed) + 1) % speeds.length];
+      currentSpeed = nextSpeed;
+      document.getElementById('speedBtn').textContent = `⚡ ${currentSpeed}x`;
+      player?.setPlaybackRate?.(currentSpeed);
+      showToast(`Velocidade: ${currentSpeed}x`);
+    }
+
+    function toggleLoop() {
+      const btn = document.getElementById('loopBtn');
+      if (loopMode === 'off') {
+        loopMode = 'all';
+        btn.textContent = '🔁 Loop: Todos';
+        btn.classList.add('active');
+        showToast('Repetindo toda a lista');
+      } else if (loopMode === 'all') {
+        loopMode = 'single';
+        btn.textContent = '🔂 Loop: Uma';
+        btn.classList.add('active');
+        showToast('Repetindo vídeo atual');
+      } else {
+        loopMode = 'off';
+        btn.textContent = '🔁 Loop: Desligado';
+        btn.classList.remove('active');
+        showToast('Loop desligado');
+      }
+    }
+
+    function shufflePlaylist() {
+      isShuffled = !isShuffled;
+      const btn = document.getElementById('shuffleBtn');
+      if (isShuffled) {
+        btn.textContent = '🔀 Aleatório';
+        btn.classList.add('active');
+        showToast('Modo aleatório ativado');
+      } else {
+        btn.textContent = '🔀 Normal';
+        btn.classList.remove('active');
+        showToast('Ordem normal ativada');
+      }
+    }
+
+    function renderPlaylist() {
+      const ul = document.getElementById('playlistUl');
+      const counter = document.getElementById('playlistCounter');
+      const nowPlayingText = document.getElementById('nowPlayingText');
+      const positionText = document.getElementById('currentVideoPosition');
+
+      if (!ul) return;
+      ul.innerHTML = '';
+      counter.textContent = `${playlist.length} vídeo${playlist.length === 1 ? '' : 's'}`;
+
+      if (playlist.length === 0) {
+        ul.innerHTML = '<li style="padding: 24px; text-align: center; color: var(--text-dim); font-size: 13px;">Lista vazia.<br>Cole um link acima para adicionar direto!</li>';
+        nowPlayingText.textContent = 'Nenhum vídeo na lista';
+        positionText.textContent = '0 / 0';
+        return;
+      }
+
+      if (playlist[currentIndex]) {
+        nowPlayingText.textContent = playlist[currentIndex].title;
+        positionText.textContent = `${currentIndex + 1} / ${playlist.length}`;
+      }
+
+      playlist.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = `playlist-item ${index === currentIndex ? 'active' : ''}`;
+        li.innerHTML = `
+          <span class="item-index">${index + 1}</span>
+          <img class="item-thumb" src="https://i.ytimg.com/vi/${item.id}/hqdefault.jpg" alt="thumb" onclick="playVideoIndex(${index})" onerror="this.src='https://placehold.co/120x90/111/fff?text=YT'">
+          <div class="item-details" onclick="playVideoIndex(${index})">
+            <div class="item-title" title="${item.title}">${item.title}</div>
+            <a href="https://youtu.be/${item.id}" target="_blank" rel="noreferrer" style="font-size: 11px; color: var(--primary); text-decoration: none;" onclick="event.stopPropagation()">youtu.be/${item.id} ↗</a>
+          </div>
+          <div class="item-actions">
+            <button class="item-btn" onclick="moveItem(${index}, -1)" title="Mover para Cima">▲</button>
+            <button class="item-btn" onclick="moveItem(${index}, 1)" title="Mover para Baixo">▼</button>
+            <button class="item-btn delete" onclick="removeItem(${index})" title="Remover da Lista">✕</button>
+          </div>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    function moveItem(index, dir) {
+      const target = index + dir;
+      if (target < 0 || target >= playlist.length) return;
+      const item = playlist.splice(index, 1)[0];
+      playlist.splice(target, 0, item);
+      if (currentIndex === index) currentIndex = target;
+      else if (currentIndex === target) currentIndex = index;
+      savePlaylist();
+    }
+
+    function removeItem(index) {
+      playlist.splice(index, 1);
+      if (currentIndex >= playlist.length) currentIndex = Math.max(0, playlist.length - 1);
+      savePlaylist();
+      showToast('Vídeo removido da lista');
+    }
+
+    function clearPlaylist() {
+      if (!confirm('Deseja realmente limpar toda a lista?')) return;
+      playlist = [];
+      currentIndex = 0;
+      savePlaylist();
+      showToast('Lista esvaziada');
+    }
+
+    function copyAllLinks() {
+      if (playlist.length === 0) {
+        showToast('Lista vazia para copiar.');
+        return;
+      }
+      const links = playlist.map(item => `https://youtu.be/${item.id}`).join('\n');
+      navigator.clipboard.writeText(links).then(() => {
+        showToast(`${playlist.length} links copiados!`);
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.code === 'Space') { e.preventDefault(); togglePlayPause(); }
+      else if (e.code === 'ArrowLeft') { e.preventDefault(); relativeSeek(-10); }
+      else if (e.code === 'ArrowRight') { e.preventDefault(); relativeSeek(10); }
+      else if (e.code === 'ArrowUp') { e.preventDefault(); setVolume(Math.min(100, currentVolume + 5)); }
+      else if (e.code === 'ArrowDown') { e.preventDefault(); setVolume(Math.max(0, currentVolume - 5)); }
+      else if (e.key === 'n' || e.key === 'N') playNext();
+      else if (e.key === 'p' || e.key === 'P') playPrev();
+      else if (e.key === 'm' || e.key === 'M') toggleMute();
+    });
+  </script>
+</body>
+</html>
